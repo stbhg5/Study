@@ -1,0 +1,72 @@
+
+- Ibatis2.0 프레임워크 세팅
+ibatis-2.3.4.726.zip - lib - ibatis-2.3.4.726.jar
+struts1 라이브러리 폴더인 lib에 복사붙여넣기
+
+src - com.util.dao - interface 만들기로 CommonDAO 만들기 (DB 경우의 수 다 적음)
+src - com.util.dao - CommonDAOImpl 만들고 implements CommonDAO 하여 Override 하고 마지막에 코드 채워넣기
+
+src - com.util.sqlMap - temp_sqlMap.xml (템플릿)
+
+  <?xml version="1.0" encoding="UTF-8"?>
+
+  <!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+  <sqlMap namespace="">
+
+
+  </sqlMap>
+
+src - com.util.sqlMap - sqlMapConfig.xml (환경설정)
+
+  <sqlMapConfig>
+
+	<settings
+	cacheModelsEnabled="false" - 캐쉬 쓰지 않는다.
+	useStatementNamespaces="true" - 이름을 board.insertData 이런 예시로 사용하겠다
+	/>
+	
+	<transactionManager type="JDBC" commitRequired="false"> - 자동으로 커밋
+	
+	<dataSource type="SIMPLE"> - DB연결
+		<property name="JDBC.Driver" value="oracle.jdbc.driver.OracleDriver"/>
+		<property name="JDBC.ConnectionURL" value="jdbc:orcle:thin:@localhost:1521:TestDB"/>
+		<property name="JDBC.Username" value="suzi"/>
+		<property name="JDBC.Password" value="a123"/>
+	</dataSource>
+	
+	</transactionManager>
+	
+	<sqlMap resource="com/util/sqlMap/temp_sqlMap.xml"/> - 아래로 코딩 많아질 것이다.
+	
+  </sqlMapConfig>
+
+src - com.util.sqlMap - SqlMapConfig.java
+
+  public class SqlMapConfig {
+	
+	private static final SqlMapClient sqlMap;
+	
+	static {//static 블록
+		
+		try {
+			
+			String resource = "com/util/sqlMap/sqlMapConfig.xml";
+			Reader reader = Resources.getResourceAsReader(resource); //xml파일 내용 class로 읽음
+			
+			sqlMap = SqlMapClientBuilder.buildSqlMapClient(reader); //읽은 xml파일 객체화 시켜 만들어 내라(공장)
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
+	}
+	
+	public static SqlMapClient getSqlMapInstance() {
+		return sqlMap;
+	}
+	
+  }
