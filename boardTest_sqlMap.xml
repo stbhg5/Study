@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="boardTest">
+
+	<select id="maxNum" resultClass="Integer">
+		select nvl(max(num),0) from board
+	</select>
+	
+	<insert id="insertData" parameterClass="com.boardTest.BoardForm">
+		insert into board (num,subject,name,email,content,pwd,ipAddr,
+		hitCount,created) values (#num#,#subject#,#name#,#email#,#content#,
+		#pwd#,#ipAddr#,0,sysdate)
+	</insert>
+	
+	<!-- 반복적인 쿼리, ||는 연결연산자다. -->
+	<sql id="where-list">
+		<isEqual property="searchKey" compareValue="name">
+			where name like '%' || #searchValue# || '%'
+		</isEqual>
+		<isEqual property="searchKey" compareValue="subject">
+			where subject like '%' || #searchValue# || '%'
+		</isEqual>
+		<isEqual property="searchKey" compareValue="content">
+			where content like '%' || #searchValue# || '%'
+		</isEqual>
+	</sql>
+	
+	<sql id="field-list">
+		num,name,subject,hitCount,to_char(created,'YYYY-MM-DD') created
+	</sql>
+	
+	<select id="dataCount" resultClass="int" parameterClass="map">
+		select nvl(count(*),0) from board
+		<include refid="where-list"/>
+	</select>
+	
+	<!-- CDATA 안은 문자로 인식, 문법으로써 인식되는 부분만 감싸지 않으면 된다.(include 같은 것) -->
+	<!-- 값 바뀌는 부분$로 처리 -->
+	<select id="listData" resultClass="com.boardTest.BoardForm" parameterClass="map">
+		select * from (
+		select rownum rnum, data.* from (
+		select <include refid="field-list"/> from board
+		where $searchKey$ like '%' || #searchValue# || '%'
+		order by num desc) data)
+		<![CDATA[
+		where rnum >= #start# and rnum <= #end#
+		]]>
+	</select>
+	
+	<!-- 조회수 증가, #num#을 #value#로 바꿀 수 있는게 어짜피 ?로 바뀌기에 -->
+	<update id="hitCountUpdate" parameterClass="int">
+		update board set hitCount = hitCount + 1 where num = #num#
+	</update>
+	
+	<!-- 하나의 데이터 읽어옴 -->
+	<select id="readData" resultClass="com.boardTest.BoardForm" parameterClass="int">
+		select num,name,subject,email,pwd,content,ipAddr,hitCount,created
+		from board where num = #num#
+	</select>
+	
+</sqlMap>
