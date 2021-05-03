@@ -62,4 +62,39 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
 		from board where num = #num#
 	</select>
 	
+	<!-- 데이터 수정 -->
+	<update id="updateData" parameterClass="com.boardTest.BoardForm">
+		update board set name = #name#,subject = #subject#,email = #email#,
+		content = #content#,pwd = #pwd# where num = #num#
+	</update>
+	
+	<!-- 데이터 삭제 -->
+	<delete id="deleteData" parameterClass="int">
+		delete from board where num = #num#
+	</delete>
+	
+	<!-- 이전글 -->
+	<select id="preReadData" resultClass="com.boardTest.BoardForm" parameterClass="map">
+		
+		select data.* from (
+		select num,subject from board
+		where ($searchKey$ like '%' || #searchValue# || '%')
+		and (num>#num#) order by num asc) data
+		where rownum = 1
+		
+	</select>
+	
+	<!-- 다음글 -->
+	<select id="nextReadData" resultClass="com.boardTest.BoardForm" parameterClass="map">
+		
+		select data.* from (
+		select num,subject from board
+		where ($searchKey$ like '%' || #searchValue# || '%')
+		<![CDATA[
+		and (num<#num#) order by num desc) data
+		where rownum = 1
+		]]>
+		
+	</select>
+	
 </sqlMap>
