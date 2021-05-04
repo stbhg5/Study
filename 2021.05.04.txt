@@ -1,0 +1,140 @@
+
+- struts2 세팅
+서버 빼고, 다이나믹 웹 프로젝트 struts2 (web.xml 체크) 만들기
+
+struts1의 ibatis-2.3.4.726.jar, jstl-1.0.2.jar, log4j-1.2.16.jar, ojdbc6.jar, standard.jar 라이브러리 복사하여
+struts2의 라이브러리로 붙여넣기(WEN-INF - lib 폴더)
+
+struts1의 com.util, com.util.dao, com.util.sqlMap 복사하여 struts2의 src로 붙이기 - FileManager.java 고치기
+com.util.sqlMap의 boardTest_sqlMap.xml, fileTest_sqlMap.xml 지우기
+com.util의 DBCPConn.java 지우기
+struts1의 log4j.properties 복사하여 struts2의 src에 붙이기
+
+struts2 서버 넣고 시작, 만든 index.jsp 실행 (http://localhost:8080/struts2/index.jsp)
+
+
+WEN-INF 폴더에 classes 폴더(이름 바꾸면 안된다!! 문법이다!!) 만들어 이 안에 환경설정 파일 넣기.
+
+struts.xml
+
+  <?xml version="1.0" encoding="UTF-8"?>
+
+  <!DOCTYPE struts
+  PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+  "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+  <struts>
+  <!-- 라이브러리 struts2-core-2.3.1.1.jar에 있는 struts-default.xml 불러옴 -->
+  <package name="default" extends="struts-default" namespace="">
+
+	  <global-results>
+	  	<result name="error">/exception/error.jsp</result>
+	  </global-results>
+
+  </package>
+  </struts>
+
+struts-temp.xml
+
+  <?xml version="1.0" encoding="UTF-8"?>
+
+  <!DOCTYPE struts
+  PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+  "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+  <struts>
+  	<!-- struts.xml의 name="default"의 연장선 : extends="default" -->
+	<package name="temp" extends="default" namespace="/temp"> - temp 부분은 내가 고쳐 쓴다.
+	
+	
+	
+	</package>
+  </struts>
+
+struts.properties
+
+  struts.i18n.encoding=UTF-8 - UTF-8로 하겠다.
+  struts.action.extension=action - .action으로 가겠다
+  struts.multipart.saveDir=c:\\temp - 파일 업로드할 때 사용할 임시 폴더
+  struts.configuration.files=struts-default.xml(struts2-core-2.3.1.1.jar에 있음, 우리가 입력한 스트럿츠2 문법검사 등을 한다),struts.xml(내가만든 환경설정) - 읽어와서 세팅!!
+
+
+struts-2.3.1.1-all.zip 의 lib 폴더 (스프링의 라이브러리도 보인다. 과거에 스트럿츠2와 스프링2.5 혼재되어 쓰일 때)
+선택한 16개 파일 복사하여 스트럿츠2 라이브러리로 복사
+(commons-beanutils-1.7.0.jar,
+commons-digester-2.0.jar,
+commons-fileupload-1.2.2.jar,
+commons-io-2.0.1.jar,
+commons-lang-2.5.jar,
+commons-logging-1.1.1.jar,
+commons-logging-api-1.1.jar,
+freemarker-2.3.18.jar,
+ognl-3.0.3.jar,
+struts2-core-2.3.1.1.jar,
+struts2-dojo-plugin-2.3.1.1.jar,
+struts2-tiles-plugin-2.3.1.1.jar,
+tiles-api-2.0.6.jar,
+tiles-core-2.0.6.jar,
+tiles-jsp-2.0.6.jar,
+xwork-core-2.3.1.1.jar)
+
+struts-2.3.1.1-all.zip 의 apps폴더의 struts2-blank.war 더블클릭하여 들어가기
+javassist-3.11.0.GA.jar 복사하여 스트럿츠2 라이브러리로 복사
+
+
+회사에서는 환경설정이 끝난 struts2의 src, WebContent 압축하여 보관하여 필요시에 사용한다. 스프링도 마찬가지다!!
+이런 환경설정 파일들 모아놓은 설명서가 API, 이런 파일 모아놓은 구조들이 하나의 프레임워크!!
+
+
+
+web.xml
+
+  <!-- Struts2 환경 설정 -->
+  <filter>
+  	<filter-name>struts2</filter-name>
+  	<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+  </filter>
+  
+  <filter-mapping>
+  	<filter-name>struts2</filter-name>
+  	<url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <!-- 보안으로 .jsp로 접근하는 것을 방지
+  <security-constraint>
+  	<web-resource-collection>
+  		<web-resource-name>PreventViewingJSPs</web-resource-name>
+  		<description>웹 사용자가 JSP 파일로 접근하는 것을 방지</description>
+  		<url-pattern>*.jsp</url-pattern>
+  		<http-method>GET</http-method>
+  		<http-method>POST</http-method> - 주석풀 때 GET과 POST 둘중하나 주석
+  	</web-resource-collection>
+  	<auth-constraint>
+  		<role-name></role-name>
+  	</auth-constraint>
+  </security-constraint>
+   -->
+
+여기까지가 struts2 환경설정
+
+
+
+-- 답변형 게시판 테이블 만들기
+create table bbs
+(boardNum number(9) not null,
+name varchar2(20) not null,
+pwd varchar2(10),
+email varchar2(50),
+subject varchar2(50) not null,
+content varchar2(4000) not null,
+ipAddr varchar2(20) not null,
+groupNum number(9) not null,
+depth number(9) not null,
+orderNo number(9) not null,
+parent number(9) not null,
+hitCount number(9) not null,
+created date,
+constraint pk_board_boardNum primary key(boardNum));
+
+commit;
+
+select * from bbs;
