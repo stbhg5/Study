@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts
+PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<!-- struts.xml의 name="default"의 연장선 : extends="default" -->
+	<package name="chainTest" extends="default" namespace="/chain">
+	
+		<action name="created" class="com.chain.RegisterAction" method="created">
+
+			<!-- 순서 바뀌면 에러생긴다!! prepare가 modelDriven위에 있어야 한다. 객체생성 후 데이터 집어 넣으니!! -->
+			<interceptor-ref name="prepare"/>
+			<interceptor-ref name="modelDriven"/>
+			<interceptor-ref name="params"/>
+
+			<result name="input">/chainTest/register.jsp</result>
+
+			<result name="success" type="chain">
+				<param name="actionName">login</param>
+				<param name="namesapce">/chain</param><!-- (생략가능) -->
+			</result>
+		</action>
+
+		<action name="login" class="com.chain.LoginAction" method="login">
+			
+			<interceptor-ref name="chain"/>
+			<interceptor-ref name="prepare"/>
+			<interceptor-ref name="modelDriven"/>
+			<interceptor-ref name="params"/>
+
+			<result name="input">/chainTest/login.jsp</result>
+			<result name="success">/chainTest/result.jsp</result>
+		</action>
+	
+	</package>
+</struts>
