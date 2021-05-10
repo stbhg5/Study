@@ -1,0 +1,13 @@
+CREATE table imageTest2
+(num number(7) PRIMARY KEY,
+subject VARCHAR2(50) NOT NULL,
+uploadFileName VARCHAR2(50),
+saveFileName VARCHAR2(50));
+
+CREATE table imageMember
+(userId VARCHAR2(10) NOT NULL,
+userPwd VARCHAR2(10) NOT NULL,
+userName VARCHAR2(20) NOT NULL);
+
+select * from imageTest2;
+select * from imageMember;

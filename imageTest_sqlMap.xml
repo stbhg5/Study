@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="imageTest">
+
+<insert id="insertLoginData" parameterClass="com.imageTest.ImageTestDTO">
+	insert into imageMember (userId,userPwd,userName)
+	values (#userId#,#userPwd#,#userName#)
+</insert>
+
+<select id="readLoginData" resultClass="com.imageTest.ImageTestDTO" parameterClass="String">
+	select userId,userPwd,userName
+	from imageMember where userId = #userId#
+</select>
+
+
+<select id="maxNum" resultClass="int">
+	select nvl(max(num),0) from imageTest2
+</select>
+
+<insert id="insertData" parameterClass="com.imageTest.ImageTestDTO">
+	insert into imageTest2 (num,subject,uploadFileName,saveFileName)
+	values (#num#,#subject#,#uploadFileName#,#saveFileName#)
+</insert>
+
+<select id="dataCount" resultClass="int">
+	select nvl(count(num),0) from imageTest2
+</select>
+
+<select id="listData" resultClass="com.imageTest.ImageTestDTO" parameterClass="map">
+	select * from (
+	select rownum rnum, data.* from (
+	select num,subject,uploadFileName,saveFileName
+	from imageTest2 order by num desc) data)
+</select>
+
+<select id="readData" resultClass="com.imageTest.ImageTestDTO" parameterClass="int">
+	select num,subject,uploadFileName,saveFileName
+	from imageTest2 where num = #num#
+</select>
+
+<delete id="deleteData" parameterClass="int">
+	delete imageTest2 where num = #num#
+</delete>
+
+</sqlMap>
