@@ -9,30 +9,33 @@ PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
 	<package name="board" extends="default" namespace="/bbs">
 	
 		<action name="created" class="com.board.BoardAction" method="created">
+			
+			<interceptor-ref name="myPrepareParamsStack"/>
+			
 			<result name="input">/board/created.jsp</result>
 			<result name="success" type="redirectAction">list</result>
 		</action>
 		
 		<action name="list" class="com.board.BoardAction" method="list">
+			<interceptor-ref name="myPrepareParamsStack"/>
 			<result name="success">/board/list.jsp</result>
 		</action>
 		
 		<action name="article" class="com.board.BoardAction" method="article">
+			<interceptor-ref name="myPrepareParamsStack"/>
 			<result name="success">/board/article.jsp</result>
 		</action>
 		
+		<!-- ?pageNum=${pageNum}&amp;searchKey=${searchKey}&amp;searchValue=${searchValue} -->
 		<action name="updated" class="com.board.BoardAction" method="updated">
+			<interceptor-ref name="myPrepareParamsStack"/>
 			<result name="input">/board/created.jsp</result>
-			<result name="success" type="redirectAction">list?pageNum=${dto.pageNum}&amp;searchKey=${dto.getsearchKey}&amp;searchValue=${dto.getsearchValue}</result>
-		</action>
-		
-		<action name="reply" class="com.board.BoardAction" method="reply">
-			<result name="input">/board/created.jsp</result>
-			<result name="success" type="redirectAction">list?pageNum=${dto.pageNum}</result>
+			<result name="success" type="redirectAction">list</result>
 		</action>
 		
 		<action name="deleted" class="com.board.BoardAction" method="deleted">
-			<result name="success" type="redirectAction">list?pageNum=${dto.pageNum}</result>
+			<interceptor-ref name="myPrepareParamsStack"/>
+			<result name="success" type="redirectAction">list</result>
 		</action>
 	
 	</package>

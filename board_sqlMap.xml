@@ -6,87 +6,48 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
 
 <sqlMap namespace="board">
 
-<!-- Alias : 별칭 -->
-<typeAlias alias="boardDTO" type="com.board.BoardDTO"/>
-
-<select id="maxBoardNum" resultClass="int">
-	select nvl(max(boardNum),0) from bbs
+<select id="numMax" resultClass="int">
+	select nvl(max(num),0) from board
 </select>
 
-<insert id="insertData" parameterClass="boardDTO">
-	insert into bbs (boardNum,name,pwd,email,subject,content,
-	ipAddr,groupNum,depth,orderNo,parent,hitCount,created)
-	values (#boardNum#,#name#,#pwd#,#email#,#subject#,#content#,
-	#ipAddr#,#groupNum#,#depth#,#orderNo#,#parent#,0,sysdate)
+<insert id="insertData" parameterClass="com.board.BoardDTO">
+	insert into board (num,name,subject,email,content,pwd,ipAddr,hitCount,created)
+	values (#num#,#name#,#subject#,#email#,#content#,#pwd#,#ipAddr#,0,sysdate)
 </insert>
 
 <select id="dataCount" resultClass="int" parameterClass="map">
-	select nvl(count(*),0) from bbs
+	select nvl(count(*),0) from board
 	where $searchKey$ like '%' || #searchValue# || '%'
 </select>
 
-<select id="listData" resultClass="boardDTO" parameterClass="map">
+<select id="listData" resultClass="com.board.BoardDTO" parameterClass="map">
 	select * from (
 	select rownum rnum, data.* from (
-	select boardNum,name,subject,depth,hitCount,
-	to_char(created,'YYYY-MM-DD') created from bbs
+	select num,name,subject,email,hitCount,
+	to_char(created,'YYYY-MM-DD') created from board
 	where $searchKey$ like '%' || #searchValue# || '%'
-	order by groupNum desc, orderNo asc) data)
-<![CDATA[
-	where rnum>=#start# and rnum<=#end#
-]]>
+	order by num desc) data)
+	<![CDATA[
+	where rnum >= #start# and rnum < =#end#
+	]]>
 </select>
 
 <update id="hitCountUpdate" parameterClass="int">
-	update bbs set hitCount = hitCount+1 where boardNum = #boardNum#
+	update board set hitCount = hitCount+1 where num = #num#
 </update>
 
-<select id="readData" resultClass="boardDTO" parameterClass="int">
-	select boardNum,name,pwd,email,subject,content,ipAddr,
-	groupNum,depth,orderNo,parent,hitCount,created
-	from bbs where boardNum = #boardNum#
+<select id="readData" resultClass="com.board.BoardDTO" parameterClass="int">
+	select num,name,pwd,email,subject,content,ipAddr,hitCount,created
+	from board where num = #num#
 </select>
 
-<!-- 이전글 -->
-<select id="preReadData"  resultClass="boardDTO" parameterClass="map">
-	select data.* from (
-	select boardNum,subject from bbs
-	where ($searchKey$ like '%' || #searchValue# || '%') and
-	<![CDATA[
-	((groupNum = #groupNum# and orderNo<#orderNo#) or
-	(groupNum>#groupNum#))
-	order by groupNum asc, orderNo desc) data
-	where rownum = 1
-	]]>
-</select>
-
-<!-- 다음글 -->
-<select id="nextReadData"  resultClass="boardDTO" parameterClass="map">
-	select data.* from (
-	select boardNum,subject from bbs
-	where ($searchKey$ like '%' || #searchValue# || '%') and
-	<![CDATA[
-	((groupNum = #groupNum# and orderNo>#orderNo#) or
-	(groupNum<#groupNum#))
-	order by groupNum desc, orderNo asc) data
-	where rownum = 1
-	]]>
-</select>
-
-<update id="orderNoUpdate" parameterClass="map">
-	update bbs set orderNo = orderNo+1
-	where groupNum=#groupNum# and orderNo>#orderNo#
-</update>
-
-<update id="updateData" parameterClass="boardDTO">
-	update bbs set name = #name#,subject = #subject#,email = #email#,
-	content = #content#,pwd = #pwd# where boardNum = #boardNum#
+<update id="updateData" parameterClass="com.board.BoardDTO">
+	update board set name = #name#,subject = #subject#,email = #email#,
+	content = #content#,pwd = #pwd# where num = #num#
 </update>
 
 <delete id="deleteData" parameterClass="int">
-	delete from bbs where boardNum in
-	(select boardNum from bbs start with boardNum = #boardNum#
-	connect by prior boardNum = parent)
+	delete from board where num = #num#
 </delete>
 
 </sqlMap>
