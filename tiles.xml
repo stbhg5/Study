@@ -11,17 +11,17 @@ PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
 		<put-attribute name="body" value="/main.jsp"/>
 		<put-attribute name="footer" value="/layout/footer.jsp"/>
 	</definition>
-
-	<definition name="bbs.listLayout" extends="mainLayout">
-		<put-attribute name="body" value="/board/list.jsp"/>
+	
+	<definition name="list.bbsLayout" extends="mainLayout">
+		<put-attribute name="body" value="/demo/bbs/list.jsp"></put-attribute>
 	</definition>
-
-	<definition name="bbs.createdLayout" extends="mainLayout">
-		<put-attribute name="body" value="/board/created.jsp"/>
+	
+	<definition name="write.bbsLayout" extends="mainLayout">
+		<put-attribute name="body" value="/demo/bbs/write.jsp"></put-attribute>
 	</definition>
-
-	<definition name="bbs.articleLayout" extends="mainLayout">
-		<put-attribute name="body" value="/board/article.jsp"/>
+	
+	<definition name="guest.bbsLayout" extends="mainLayout">
+		<put-attribute name="body" value="/demo/guest/guest.jsp"></put-attribute>
 	</definition>
-
+	
 </tiles-definitions>

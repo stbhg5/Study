@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"	
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+    
+    <!-- *:프로젝트 전체에서 어노테이션 사용하겠다. 설정 -->
+    <context:component-scan base-package="*"/>
+    
+    <!-- 어노테이션을 이용할 컨트롤러 등록 - p:폴더형식 주소쓰겠다. -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"
+    p:alwaysUseFullPath="true">
+    	<!-- 어노테이션 순서 1번 하겠다. 원래는 아래 긴 코딩들 없다면 원래 1번 -->
+    	<property name="order" value="1"/>
+    </bean>
+    
+    <!-- 
+    타일즈 세팅(viewResolver와 간섭생겨 위에 코딩), 주석처리하여 비활성화 시켜 아래코딩 읽히게 하기
+    <bean id="tilesViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+    	<property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView"/>
+    </bean>
+     -->
+    
+    <!-- 설정파일 위치 -->
+    <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+    	<property name="definitions">
+    		<list>
+    			<value>/WEB-INF/tiles.xml</value>
+    		</list>
+    	</property>
+    </bean>
+    
+    <!-- /와 .jsp 생략가능 적음 -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    	<property name="prefix" value="/"/>
+    	<property name="suffix" value=".jsp"/>
+    </bean>
+    
+    
+    
+    <!-- 주소 부르는 2가지 방법 -->
+    
+    <!-- bean url -->
+    <!-- 특별 능력 컨트롤러 주로 사용 (상속된 AbstractController 등) -->
+    <bean id="beanNameUrlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+	<!-- 사용자 지정 url -->
+	<bean name="/test/msg.action" class="com.test.TestController"/>
+	
+	<!-- simple url -->
+	<!-- 보편적 컨트롤러 주로 사용 (구현된 Controller) -->
+	<bean id="SimpleUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<!-- 어노테이션보다 2순위로 사용하겠다 -->
+		<property name="order" value="2"/>
+		<!-- http://xxx/test/a.action 여기서 중간주소인 test 쓸수 있나 유무, false면 없음 -->
+		<property name="alwaysUseFullPath" value="true"/>
+		<property name="mappings">
+			<!-- 객체이름 추가 -->
+			<props>
+				<prop key="/test/write.action">listFormController</prop>
+				<prop key="/test/write_ok.action">listController</prop>
+				<prop key="/test1/login.action">testLoginController</prop>
+				<prop key="/test2/mem.action">testMemController</prop>
+				<prop key="/multi/*.action">multiTestController</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- 클래스 객체 생성 -->
+	<bean name="listFormController" class="com.test.ListFormController"/>
+	<bean name="listController" class="com.test.ListController"/>
+	
+	
+	<!-- 로그인 -->
+	<bean name="authen-ref" class="com.test1.LoginAuthenticatorImpl"/>
+	<bean name="testLoginController" class="com.test1.LoginController">
+		<!-- set빼고 의존성 주입, 제어의 역전, 세터에 넣어줌 -->
+		<property name="authenticator" ref="authen-ref"/>
+		<!-- LoginCommand를 testLoginCommand이름으로 객체생성 -->
+		<property name="commandName" value="testLoginCommand"/><!-- 내가주는 이름 -->
+		<property name="commandClass" value="com.test1.LoginCommand"/><!-- 클래스 이름 -->
+		<!-- <property name="formView" value="test1/login"/> 위에 login.action으로 이름 동일하면 없어도 찾는다. 하지만 log.action으로 하면 찾아가는 이 코딩 명시해야 한다. -->
+	</bean>
+	
+	
+	<!-- 이전단계, 다음단계 -->
+	<bean name="testMemController" class="com.test2.MemController">
+		<property name="pages">
+			<list><!-- 자동으로 순서대로 index 0,1,2 만들어 진다. -->
+				<value>test2/mem1</value>
+				<value>test2/mem2</value>
+				<value>test2/mem3</value>
+			</list>
+		</property>
+	</bean>
+	
+	
+	<!-- 주소 이름에 따라 컨트롤러의 다른 메소드로 가기 -->
+	<!-- 제어의 역전 propsResolver -->
+	<bean name="multiTestController" class="com.test3.MultiTestController">
+		<property name="methodNameResolver" ref="propsResolver"></property>
+	</bean>
+	
+	<bean id="propsResolver" class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+		<property name="mappings">
+			<props>
+				<prop key="/multi/list.action">list</prop>
+				<prop key="/multi/view.action">view</prop>
+			</props>
+		</property>
+	</bean>
+	
+</beans>  
