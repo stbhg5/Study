@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="fileBoard">
+
+<select id="maxNum" resultClass="int">
+	select nvl(max(num),0) from fileBoard
+</select>
+
+<insert id="insertData" parameterClass="com.fileBoard.FileBoardCommand">
+	insert into fileBoard (num,subject,saveFileName,originalFileName)
+	values (#num#,#subject#,#saveFileName#,#originalFileName#)
+</insert>
+
+<select id="dataCount" resultClass="int">
+	select nvl(count(*),0) from fileBoard
+</select>
+
+<select id="listData" resultClass="com.fileBoard.FileBoardCommand" parameterClass="map">
+	select * from (
+	select rownum rnum, data.* from (
+	select num,subject,saveFileName,originalFileName
+	from fileBoard order by num desc) data)
+	<![CDATA[
+	where rnum>=#start# and rnum<=#end#
+	]]>
+</select>
+
+<select id="readData" resultClass="com.fileBoard.FileBoardCommand" parameterClass="int">
+	select num,subject,saveFileName,originalFileName
+	from fileBoard where num = #num#
+</select>
+
+<delete id="deleteData" parameterClass="int">
+	delete fileBoard where num = #num#
+</delete>
+
+</sqlMap>
