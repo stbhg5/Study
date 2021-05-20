@@ -1,0 +1,265 @@
+
+- 스프링 프레임워크 설치 및 세팅 (버전 의미없다. 메이븐 가서 바뀔 수 있다. 기본은 3.0, 3점대)
+
+선생님 주신 spring-tool-suite-3.9.14.RELEASE-e4.17.0-win32-x86_64.zip 받기 (3.9버전 툴)
+
+https://spring.io/ - 스프링 홈페이지
+https://spring.io/quickstart - 스프링 사용할 수 있는 툴 선택
+https://spring.io/tools - Spring Tools 4 for Eclipse, 비주얼 스튜디오 플러그인도 있다.
+회사에선 이클립스 많이쓴다.
+자바스크립트 코딩은 비주얼 스튜디오 쓴다.
+
+개발툴 3.9버전과 4점대 버전 차이?
+스프링 부트를 강조하는데 프로그래머들이 잘 안쓴다. 코딩으로 프로그램 만드는 것에 익숙해졌기 때문.
+4점대는 스프링 부트 기능만 있고 오리지날 버전이나 사용자 정의 세팅(수동 코딩) 없앴다.
+즉, 이전 3.9버전에 스프링 부트 입혀놓은게 4점대 버전이다.
+
+이클립스 - Help - 이클립스 마켓플레이스 : 스프링 기능 있었지만 지금은 없어졌다.
+
+
+spring-tool-suite-3.9.14.RELEASE-e4.17.0-win32-x86_64.zip - sts-bundle을 D:드라이브로 복사하기
+D:\sts-bundle\work폴더 만들기
+(D:\sts-bundle\sts-3.9.14.RELEASE 이클립스 폴더)
+(D:\sts-bundle\pivotal-tc-server 지울 것이다. 회사는 아파치 톰켓 쓰기 때문)
+
+D:\UTL - apache-tomcat-8.5.64.zip - apache-tomcat-8.5.64를 D:\sts-bundle로 복사하기
+
+sts-3.9.14.RELEASE - STS.exe 실행 (바탕화면 바로가기 만들기) - 한 창이 뜨며 실행이 안될 것이다.
+
+D:\sts-bundle\sts-3.9.14.RELEASE/STS.ini - 편집하기!!
+
+- STS.ini
+-startup
+plugins/org.eclipse.equinox.launcher_1.5.800.v20200727-1323.jar
+--launcher.library
+plugins/org.eclipse.equinox.launcher.win32.win32.x86_64_1.1.1300.v20200819-0940
+-product
+org.springsource.sts.ide
+--launcher.defaultAction
+openFile
+-vmargs
+-Dosgi.requiredJavaVersion=11 -> 1.8로 변경!!
+-Dosgi.dataAreaRequiresExplicitInit=true
+-Xms256m
+-Xmx2048m
+--add-modules=ALL-SYSTEM
+-Dosgi.module.lock.timeout=10
+
+그 뒤 STS.exe 실행하고 D:\sts-bundle\work 폴더 지정 후 Launch
+
+Dashboard 닫기
+
+왼쪽 보면 Servers에 VMware 서버 있지만 안 쓴다. 우클릭 후 체크확인 후 지우기
+Package Explorer의 Servers 우클릭 후 Delete - 체크 반드시 하고 지우기
+
+윗 메뉴 Window - Preferences - Server - Runtime Environment - VMware tc Server... 지우기
+윗 메뉴 Window - Preferences - General - Appearance - Colors and Fonts - Basic - Text Font를 Edit로 글꼴 바꾸기
+윗 메뉴 Window - Preferences - Web - CSS Files,HTML Files,JSP Files의 Encoding을 ISO 10646/Unicode(UTF-8)로 바꾸기, JavScript는 이미 바뀌어져 있어서 바꿀필요 없다.
+
+윗 메뉴 Window - Preferences - Web - JSP Files - Editor - Templates - New JSP File (html 4.01) - Edit Template로 수정
+
+<%@ page contentType="text/html; charset=${encoding}"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%
+	request.setCharacterEncoding("UTF-8");
+	String cp = request.getContextPath();
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=${encoding}">
+<title>Insert title here</title>
+</head>
+<body>
+${cursor}
+</body>
+</html>
+
+이렇게 설정하기!!
+Apply and Close
+
+윗메뉴 File - New - Spring Starter Project : 스프링 부트
+윗메뉴 File - New - Spring Legacy Project : 사용자 정의
+Import Spring은 이미 있는것 불러오기
+
+개발툴 4.0은 위 Spring Legacy Project가 없어져 버렸다.
+
+
+- Spring Core(DI/IOC)
+윗메뉴 File - New - Spring Legacy Project - SpringDI
+Simple Spring Utility Project(콘솔 프로그램 만들기) 선택 후 next - 무언가를 다운받는지 물어봄
+패키지 만들기 (3단어 이어야 한다!!) com.exe.springdi1로 설정 후 finish - 무언가를 다운받기 시작
+
+Package Explorer의 SpringDI 생성(엑스박스 뜨지만 정상이다)
+
+SpringDI - src/test/java 는 테스트 용도로 만들어짐, 즉 샘플이다.
+Example....java 파일 2개 지우기
+SpringDI - src/main/java의 .java 파일 2개 지우기
+
+Spring은 라이브러리 폴더에 수동적으로 라이브러리를 넣어줄 필요 없다.
+아까 다운 받은 무언가가 라이브러리 파일을 자동으로 받은 것이다. (인터넷 연결 환경 필수!!)
+C:\Users\user\.m2 만들어져 있을 것이다.
+C:\Users\user\.m2\repository
+C:\Users\user\.m2\repository\org\springframework\spring-core\3.0.6.RELEASE 보면 받아져 있음
+
+여기서 에러 생기면 라이브러리 문제일 확률이 높다!!
+이럴때 STS 끄고 C:\Users\user\.m2\repository 폴더 삭제후 다시 시작 하면 새로 다운로드 하고 세팅 될 것이다.
+이런 기능을 Maven이라고 한다. 물론 Spring이 알고있는 라이브러리만 자동으로 다운로드 된다.
+내가 필요한 건 수동으로 받아야 한다. (프로그래머는 자동 안 좋아한다. 수동 좋아한다.)
+
+현재의 환경설정 필요할 땐 C:\Users\user\.m2\repository 압축하고 옮기기
+
+SpringDI - src/main/java에 코딩!!
+SpringDI - src/main/resources - META-INF - spring - app-context.xml 환경설정 파일 확인
+
+회사에선 경력직에게 의존성 주입과 제어의 역전으로 1시간동안 대화할 수 있는지 묻는다.
+
+
+- Spring Web
+D:\sts-bundle\apache-tomcat-8.5.64\conf - server.xml 편집 (GET 한글 깨지지 않게)
+
+- server.xml
+<Connector port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443"
+		URIEncoding="UTF-8"/> -> 인코딩 넣기
+    <!-- A "Connector" using the shared thread pool-->
+    <!--
+    <Connector executor="tomcatThreadPool"
+               port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" />
+
+Package Explorer 우클릭 후 Spring Legacy Project클릭 SpringMVC1 이름 설정 후
+Spring MVC Project 선택 후 패키지는 com.exe.springmvc로 설정
+-> 기존에 만들었던 SpringDI와 모양 다르다
+
+Servers 들어가서 서버 만들기 - Apache 톰캣 8.5 선택
+폴더찾아 설정하기 D:\sts-bundle\apache-tomcat-8.5.64
+SpringMVC1서버 추가하고 finish
+방화벽 뜨면 허용
+
+http://localhost:8080/springmvc/ - 들어가서 실행되는지 확인 (시간 깨짐)
+
+SpringMVC 우클릭 - Properties - Web Project Settings의 Context root:가 주소이름이다!!
+
+- HomeController.java
+주석 지우기
+
+src - main - webapp - WEB-INF - views
+- home.jsp (jsp파일 views 폴더에 있다)
+<%@ page session="false" pageEncoding="UTF-8" %> 로 수정
+
+src - main - webapp - resources폴더에 css파일, js파일, 화면띄우는 그림파일 다 여기 들어간다.
+특히 그림파일은 봐야하기에 무조건 resources로 들어가고 views 폴더에 오면 안된다.
+
+WEB-INF는 보안있다.
+
+C:\Users\user\.m2\repository - 라이브러리가 늘어난걸 알 수 있다.
+
+
+- Spring DAO(JDBC)
+SpringJdbcTemplate 이름설정
+Simple Spring Utility Project 선택 후 패키지 com.exe.springjdbctemplate 만들고
+src/main/java,src/test/java의 .java 파일 4개 지우기
+
+- CMD
+- suzi
+- 테이블 만들기
+create table custom
+(id number,
+name char(10),
+age number);
+
+select * from custom;
+
+JDBC 라이브러리는 자체적 다운로드가 안됨
+
+https://mvnrepository.com/ - 메이븐의 메인 페이지
+dbcp 검색 - commons dbcp - 사용자가 많이 받은 1.4
+https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp
+https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp/1.4
+
+라이브러리 받는 방법중 한국에선 Maven 많이 사용 (Spring에선 Maven과 Gradle 많이 쓴다.)
+
+pom.xml이 Maven의 환경설정 파일 - 여기서 스프링 프레임워크 버전 설정 가능
+
+<!-- https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp -->
+<dependency>
+    <groupId>commons-dbcp</groupId>
+    <artifactId>commons-dbcp</artifactId>
+    <version>1.4</version>
+</dependency>
+
+pom.xml - dependency에 위에 대로 적으면 되는데 적기 귀찮음 그래서 그대로 복사한것 pom.xml에 붙여넣기
+그럼 다운로드가 시작된다.
+
+C:\Users\user\.m2\repository 에서
+C:\Users\user\.m2\repository\commons-dbcp\commons-dbcp\1.4 이렇게 다운로드 된걸 확인 가능!!
+이것이 Maven이다.
+
+commons-pool 1.6도 다운받기
+https://mvnrepository.com/search?q=pool
+
+https://mvnrepository.com/artifact/commons-pool/commons-pool
+
+https://mvnrepository.com/artifact/commons-pool/commons-pool/1.6
+
+<!-- https://mvnrepository.com/artifact/commons-pool/commons-pool -->
+<dependency>
+    <groupId>commons-pool</groupId>
+    <artifactId>commons-pool</artifactId>
+    <version>1.6</version>
+</dependency>
+
+그대로 복사한것 pom.xml에 붙여넣기
+
+만약 에러발생시 
+프로젝트 아무거나(SpringDI,SpringJdbcTemplate,SpringMVC1) 우클릭 - Maven - update Maven project - 프로젝트들 중 필요한 것 체크해서 OK하면 알아서 없는것 다운해줌
+
+ojdbc6도 다운받기
+https://mvnrepository.com/search?q=ojdbc6
+
+https://mvnrepository.com/artifact/com.oracle/ojdbc6
+
+https://mvnrepository.com/artifact/com.oracle/ojdbc6/12.1.0.1-atlassian-hosted
+
+<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
+<dependency>
+    <groupId>com.oracle</groupId>
+    <artifactId>ojdbc6</artifactId>
+    <version>12.1.0.1-atlassian-hosted</version>
+</dependency>
+
+-> 안된다. 왜냐 하면 오라클은 자기네 라이센스 가지고 있기에 Maven에 없다.
+
+https://mvnrepository.com/repos/atlassian-packages-3rdparty 의 주소 복사
+
+<!-- 별도 위치 -->
+	<repositories>
+		<repository>
+			<id>oracle</id>
+			<name>Oracle JDBC Repository</name>
+			<url>https://packages.atlassian.com/maven-3rdparty/</url>
+		</repository>
+	</repositories>
+
+위에 안됨... 교묘히 라이센스 주소를 바꿈...
+
+https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc6
+
+https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc6/11.2.0.4
+
+<!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc6 -->
+<dependency>
+    <groupId>com.oracle.database.jdbc</groupId>
+    <artifactId>ojdbc6</artifactId>
+    <version>11.2.0.4</version>
+</dependency>
+
+그대로 복사한것 pom.xml에 붙여넣기
+
+또 안된다면 이전 위에 것과 번갈아 사용해보기 (6개월 ~ 1년 단위로 위치 바뀐다)
+
+
+
